@@ -71,13 +71,15 @@ def make_statement(statement, decoration):
 
 
 # Main routine
-make_statement("Welcome to the Roll It 13 Game", "🍀")
-print()
 
 # At the start of the game, the computer/user scores are both zero (initialise them)
 comp_score = 0
 user_score = 0
 rounds_played = 0
+
+game_history = []
+
+make_statement("Welcome to the Roll It 13 Game", "🍀")
 
 # Ask the user if they want instructions (check that they say yes/no)
 want_instructions = yes_no("Do you want to see the instructions?")
@@ -187,6 +189,14 @@ while comp_score < game_goal and user_score < game_goal:
     # Outside rounds loop - update score with round points, only add points to the score of the
     comp_score += comp_points
     user_score += user_points
+
+    # Generate round results and add it to the game history list
+    game_results = (f"Round {rounds_played}: User Points: {user_points} | "
+                    f"Computer Points: {comp_points}, {winner} wins"
+                    f" ({user_score} | {comp_score})")
+
+    game_history.append(game_results)
+
     # Show overall scores (add this to rounds loop)
     make_statement("Game Update", "*")
     print(f"User Score: {user_score} | Computer Score: {comp_score}")
@@ -198,6 +208,12 @@ make_statement("Game over", "🏁")
 
 print()
 if user_score > comp_score:
-    make_statement("The user won.", "=")
+    make_statement("The user won.", "👍")
 else:
-    print("The computer won.")
+    make_statement("The computer won.", "💻")
+
+print()
+make_statement("Game History", "🎲")
+
+for item in game_history:
+    print(item)
