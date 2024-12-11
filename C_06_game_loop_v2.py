@@ -29,17 +29,104 @@ def make_statement(statement, decoration):
 # At the start of the game, the computer/user scores are both zero (initialise them)
 comp_score = 0
 user_score = 0
-game_goal = 0
+rounds_played = 0
 
-game_goal = initial_points("Game Goal")  # should be a function call
+game_goal = int(input("Game Goal: "))  # should be a function call
 
 # Play multiple rounds until a winner has been found
 while comp_score < game_goal and user_score < game_goal:
 
+    rounds_played += 1
+
     # Start of round loop
-    # For testing purposes, ask the user what the points for the user/computer were
-    comp_points = int(input("Enter the computer points at the end of the round: "))
-    user_points = int(input("Enter the user points at the end of the round: "))
+    make_statement(f"Round {rounds_played}", "🎲")
+    # Roll the dice for the user and note of they got a double
+    initial_user = initial_points("User")
+    initial_comp = initial_points("Comp")
+
+    # Retrieve user points (first item returned from function)
+    user_points = initial_user[0]
+    comp_points = initial_comp[0]
+
+    double_user = initial_user[1]
+
+    # Let the user know if they qualify for double points
+    if double_user == "yes":
+        print("Great news - if you win, you will earn double points!")
+
+    # Assume user goes first ...
+    first = "User"
+    second = "Computer"
+    player_1_points = user_points
+    player_2_points = comp_points
+
+    # If the user has fewer points, they start the game
+    if user_points < comp_points:
+        print("You start because your initial roll was less than the computer\n")
+
+    # If the user and computer roll equal points, the user is player 1
+    elif user_points == comp_points:
+        print("The initial rolls were the same, the user starts")
+
+    # If the computer has fewer points, switch the computer to 'player 1'
+    else:
+        player_1_points, player_2_points = player_2_points, player_1_points
+        first, second = second, first
+
+    # Loop until we have a winner
+    while player_1_points < 13 and player_2_points < 13:
+        print()
+        input("Press <enter> to continue this round\n")
+
+        # First person rolls the die and score is updated
+        player_1_roll = random.randint(1, 6)
+        player_1_points += player_1_roll
+
+        print(f"{first}: Rolled a {player_1_roll} - has {player_1_points} points")
+
+        # If the first person's score is over 13, end the round
+        if player_1_points >= 13:
+            break
+
+        # Second person rolls the die and score is updated
+        player_2_roll = random.randint(1, 6)
+        player_2_points += player_2_roll
+
+        print(f"{second}: Rolled a {player_2_roll} - has {player_2_points} points")
+
+        print(f"{first}: {player_1_points} | {second}: {player_2_points}")
+
+        # print("End of round")
+        # Associate player points with either the user or the computer
+        user_points = player_1_points
+        comp_points = player_2_points
+
+        # Switch the user and computer points if the computer went first
+        if first == "Computer":
+            user_points, comp_points = comp_points, user_points
+
+        # Work out who won and set the loser points to zero
+        if user_points > comp_points:
+            winner = "user"
+            loser = "computer"
+            comp_points = 0
+
+        else:
+            winner = "computer"
+            loser = "user"
+            user_points = 0
+
+        round_feedback = f"The {winner} won. The {loser}'s points have been reset to zero."
+
+        # Double user points if eligible
+        if winner == "user" and double_user == "yes":
+            user_points = user_points * 2
+
+        # Output round results
+        make_statement("Round Results", "=")
+        print(f"User Points: {user_points} | Computer Points: {comp_points}")
+        print(round_feedback)
+        print()
 
     # Outside rounds loop - update score with round points, only add points to the score of the
     comp_score += comp_points
@@ -47,8 +134,12 @@ while comp_score < game_goal and user_score < game_goal:
     # Show overall scores (add this to rounds loop)
     make_statement("Game Update", "*")
     print(f"User Score: {user_score} | Computer Score: {comp_score}")
+    print()
 
 # end of entire game, output final results
+
+make_statement("Game over", "🏁")
+
 print()
 if user_score > comp_score:
     make_statement("The user won.", "=")
